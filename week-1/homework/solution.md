@@ -1,16 +1,33 @@
+# Questions and Solutions
 
-Q1: Run docker with the python:3.12.8 image in an interactive mode, use the entrypoint bash.
+## Q1: Run docker with the python:3.12.8 image in an interactive mode, use the entrypoint bash.
 
-What's the version of pip in the image?
-A1: run the docker file with the commands 
-    FROM python:3.12.8
-    ENTRYPOINT ["bash"]
-    in the bash shell run the comman pip --version
-    24.3.1
+### What's the version of pip in the image?
 
+#### Solution:
+Run the following Dockerfile:
 
-Q2: Given the following docker-compose.yaml, what is the hostname and port that pgadmin should use to connect to the postgres database?
+```dockerfile
+FROM python:3.12.8
+ENTRYPOINT ["bash"]
+```
 
+After starting the container, in the bash shell, run the following command:
+
+```bash
+pip --version
+```
+
+#### Output:
+```
+24.3.1
+```
+
+---
+
+## Q2: Given the following `docker-compose.yaml`, what is the hostname and port that pgAdmin should use to connect to the Postgres database?
+
+```yaml
 services:
   db:
     container_name: postgres
@@ -40,24 +57,29 @@ volumes:
     name: vol-pgdata
   vol-pgadmin_data:
     name: vol-pgadmin_data
+```
 
-A2: Hostname is DB since it is the service name and services talk to  
-    each other on the network using it. Port is 5432 since it is the internal port exposing Postgres service.
+#### Solution:
+- Hostname: `db` (service name).
+- Port: `5432` (internal Postgres port exposed to the network).
 
-Q3: Question 3. Trip Segmentation Count
+---
 
-During the period of October 1st 2019 (inclusive) and November 1st 2019 (exclusive), how many trips, respectively, happened:
+## Q3: Trip Segmentation Count
 
-    Up to 1 mile
-    In between 1 (exclusive) and 3 miles (inclusive),
-    In between 3 (exclusive) and 7 miles (inclusive),
-    In between 7 (exclusive) and 10 miles (inclusive),
-    Over 10 miles
+### Question:
+During the period of October 1st, 2019 (inclusive) and November 1st, 2019 (exclusive), how many trips happened:
+1. Up to 1 mile.
+2. In between 1 (exclusive) and 3 miles (inclusive).
+3. In between 3 (exclusive) and 7 miles (inclusive).
+4. In between 7 (exclusive) and 10 miles (inclusive).
+5. Over 10 miles.
 
+#### Solution:
+Run the following SQL query:
 
-A3: Run the docker compose yaml file and then run the injest data
-
- SELECT 
+```sql
+SELECT 
     SUM(CASE 
         WHEN trip_distance <= 1 THEN 1
         ELSE 0
@@ -81,35 +103,51 @@ A3: Run the docker compose yaml file and then run the injest data
 FROM green_taxi_data
 WHERE lpep_pickup_datetime >= '2019-10-01 00:00:00'
   AND lpep_pickup_datetime < '2019-11-01 00:00:00';
+```
 
-  upto 1 mile: 104830
-  between 1 and 3 miles: 198995
-  between 3 and 7 miles: 109642
-  between 7 and 10 miles: 27686
-  uver 10 miles: 35201
+#### Output:
+- Up to 1 mile: `104830`
+- Between 1 and 3 miles: `198995`
+- Between 3 and 7 miles: `109642`
+- Between 7 and 10 miles: `27686`
+- Over 10 miles: `35201`
 
-Q4:  Which was the pick up day with the longest trip distance? Use the pick up time for your calculations.  
+---
 
-A4: WITH longest_trip_day AS (
+## Q4: Which was the pickup day with the longest trip distance?
+
+#### Solution:
+Run the following SQL query:
+
+```sql
+WITH longest_trip_day AS (
     SELECT 
         DATE(lpep_pickup_datetime) AS pickup_day,
         MAX(trip_distance) AS max_trip_distance
     FROM green_taxi_data
     GROUP BY DATE(lpep_pickup_datetime)
-     )
-    SELECT 
+)
+SELECT 
     pickup_day,
     max_trip_distance
-    FROM longest_trip_day
-    ORDER BY max_trip_distance DESC
-    LIMIT 1;
+FROM longest_trip_day
+ORDER BY max_trip_distance DESC
+LIMIT 1;
+```
 
-    pickup date: 31-10-2019
-    longest_trip_distance: 515.89
+#### Output:
+- Pickup date: `2019-10-31`
+- Longest trip distance: `515.89`
 
-Q5: Which were the top pickup locations with over 13,000 in total_amount (across all trips) for 2019-10-18?
+---
 
-A5: SELECT 
+## Q5: Which were the top pickup locations with over 13,000 in total amount (across all trips) for 2019-10-18?
+
+#### Solution:
+Run the following SQL query:
+
+```sql
+SELECT 
     z."Zone" AS pickup_zone,
     SUM(g."total_amount") AS total_revenue
 FROM green_taxi_data g
@@ -118,14 +156,22 @@ WHERE DATE(g."lpep_pickup_datetime") = '2019-10-18'
 GROUP BY z."Zone"
 HAVING SUM(g."total_amount") > 13000
 ORDER BY total_revenue DESC;
+```
 
-East Harlem North - 18686.680
-East Harlem South - 16797.260
-Morningside Heights - 13029.790
+#### Output:
+- East Harlem North: `18686.680`
+- East Harlem South: `16797.260`
+- Morningside Heights: `13029.790`
 
-Q6: For the passengers picked up in October 2019 in the zone named "East Harlem North" which was the drop off zone that had the largest tip?
+---
 
-A6: SELECT 
+## Q6: For the passengers picked up in October 2019 in the zone named "East Harlem North", which was the drop-off zone that had the largest tip?
+
+#### Solution:
+Run the following SQL query:
+
+```sql
+SELECT 
     z_dropoff."Zone" AS dropoff_zone,
     MAX(g."tip_amount") AS largest_tip
 FROM green_taxi_data g
@@ -136,5 +182,8 @@ WHERE z_pickup."Zone" = 'East Harlem North'
 GROUP BY z_dropoff."Zone"
 ORDER BY largest_tip DESC
 LIMIT 1;
+```
 
-JFK Airport - 87.3
+#### Output:
+- Drop-off zone: `JFK Airport`
+- Largest tip: `87.3`
