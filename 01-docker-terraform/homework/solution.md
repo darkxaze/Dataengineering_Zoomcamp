@@ -102,15 +102,17 @@ SELECT
     END) AS over_10_miles
 FROM green_taxi_data
 WHERE lpep_pickup_datetime >= '2019-10-01 00:00:00'
-  AND lpep_pickup_datetime < '2019-11-01 00:00:00';
+  AND lpep_pickup_datetime < '2019-11-01 00:00:00'
+  AND lpep_dropoff_datetime < '2019-11-01 00:00:00'
+   ;
 ```
 
 #### Output:
-- Up to 1 mile: `104830`
-- Between 1 and 3 miles: `198995`
-- Between 3 and 7 miles: `109642`
-- Between 7 and 10 miles: `27686`
-- Over 10 miles: `35201`
+- Up to 1 mile: `104802`
+- Between 1 and 3 miles: `198924`
+- Between 3 and 7 miles: `109603`
+- Between 7 and 10 miles: `27678`
+- Over 10 miles: `35189`
 
 ---
 
