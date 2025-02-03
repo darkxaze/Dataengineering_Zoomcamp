@@ -3,8 +3,8 @@ volumes:
     driver: local
   kestra-data:
     driver: local
-  vol-pgadmin_data:
-    name: vol-pgadmin_data
+  zoomcamp-data:
+    driver: local
 
 services:
   postgres:
@@ -24,6 +24,9 @@ services:
   kestra:
     image: kestra/kestra:latest
     pull_policy: always
+    # Note that this setup with a root user is intended for development purpose.
+    # Our base image runs without root, but the Docker Compose implementation needs root to access the Docker socket
+    # To run Kestra in a rootless mode in production, see: https://kestra.io/docs/installation/podman-compose
     user: "root"
     command: server standalone
     volumes:
@@ -61,15 +64,28 @@ services:
     depends_on:
       postgres:
         condition: service_started
-
+    
+  postgres_zoomcamp:
+    image: postgres
+    environment:
+      POSTGRES_USER: kestra
+      POSTGRES_PASSWORD: k3str4
+      POSTGRES_DB: postgres-zoomcamp
+    ports:
+      - "5432:5432"
+    volumes:
+      - zoomcamp-data:/var/lib/postgresql/data
+    depends_on:
+      kestra:
+        condition: service_started
 
   pgadmin:
-    container_name: pgadmin
-    image: dpage/pgadmin4:latest
+    image: dpage/pgadmin4
     environment:
-       - PGADMIN_DEFAULT_EMAIL=admin@admin.com
-       - PGADMIN_DEFAULT_PASSWORD=root
+      - PGADMIN_DEFAULT_EMAIL=admin@admin.com
+      - PGADMIN_DEFAULT_PASSWORD=root
     ports:
-      - "18080:80"
-    volumes:
-      - vol-pgadmin_data:/var/lib/pgadmin  
+      - "8085:80"
+    depends_on:
+      postgres_zoomcamp:
+        condition: service_started
