@@ -18,7 +18,7 @@
 - [ ] `green_tripdata_04_2020.csv`
 - [ ] `green_tripdata_2020.csv`
 
-**A2.** The output variable follows the pattern `{taxi}_tripdata_{year}-{month}.csv`, which when rendered with the given inputs becomes **green_tripdata_2020-04.csv**.
+**A2.** The output variable pattern is `{taxi}_tripdata_{year}-{month}.csv`, Hence with the given inputs becomes **green_tripdata_2020-04.csv**.
 
 ---
 
@@ -72,7 +72,7 @@ The result is **1,734,051**.
 ```sql
 SELECT COUNT(*) as total_rows
 FROM yellow_tripdata
-WHERE filename LIKE 'yellow_tripdata_2021-03.csv';
+WHERE filename = 'yellow_tripdata_2021-03.csv';
 ```
 
 The result is **1,925,152**.
