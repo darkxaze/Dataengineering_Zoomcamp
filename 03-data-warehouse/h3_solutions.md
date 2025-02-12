@@ -86,6 +86,8 @@ SELECT count(*) FROM `dtc-de-course-448917.nytaxi.external_yellow_tripdata_non_p
 - Cluster on tpep_dropoff_datetime Partition by VendorID
 - Partition by tpep_dropoff_datetime and Partition by VendorID
 
+ > **Explanation**:Queries will always filter by tpep_dropoff_datetime and order by VendorID, the best approach is to partition the table by tpep_dropoff_datetime and cluster it by VendorID
+
 ### Question 6: Estimated Bytes for Distinct VendorID Query (March 1-15, 2024)
 
 - 12.47 MB for non-partitioned table and 326.42 MB for the partitioned table
