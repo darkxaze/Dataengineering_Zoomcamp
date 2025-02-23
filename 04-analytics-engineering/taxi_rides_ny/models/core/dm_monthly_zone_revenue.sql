@@ -4,7 +4,7 @@ with trips_data as (
     select * from {{ ref('fact_trips') }}
 )
     select 
-    -- Reveneue grouping 
+    -- Revenue grouping 
     pickup_zone as revenue_zone,
     {{ dbt.date_trunc("month", "pickup_datetime") }} as revenue_month, 
 
@@ -17,7 +17,7 @@ with trips_data as (
     sum(tip_amount) as revenue_monthly_tip_amount,
     sum(tolls_amount) as revenue_monthly_tolls_amount,
     sum(ehail_fee) as revenue_monthly_ehail_fee,
-    sum(improvement_surcharge) as revenue_monthly_improvement_surcharge,
+    sum(imp_surcharge) as revenue_monthly_improvement_surcharge,
     sum(total_amount) as revenue_monthly_total_amount,
 
     -- Additional calculations
